@@ -146,6 +146,7 @@
   blk_set_stacking_limits
   blk_start_plug
   blk_sync_queue
+  blkdev_get_by_path
   blocking_notifier_call_chain
   blocking_notifier_chain_register
   blocking_notifier_chain_unregister
@@ -743,7 +744,6 @@
   flush_dcache_page
   flush_delayed_fput
   flush_delayed_work
-  flush_signals
   flush_work
   flush_workqueue
   fput
@@ -1236,6 +1236,7 @@
   ktime_get_with_offset
   kvfree
   kvmalloc_node
+  led_blink_set
   led_classdev_flash_register_ext
   led_classdev_flash_unregister
   led_classdev_unregister
@@ -1712,6 +1713,7 @@
   powercap_unregister_control_type
   powercap_unregister_zone
   power_supply_changed
+  power_supply_class
   power_supply_get_by_name
   power_supply_get_drvdata
   power_supply_get_property
@@ -2697,7 +2699,6 @@
   vchan_tx_desc_free
   vchan_tx_submit
   vfree
-  vfs_fsync
   vhost_add_used_and_signal
   vhost_dev_check_owner
   vhost_dev_cleanup

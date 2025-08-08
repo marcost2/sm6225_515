@@ -766,6 +766,16 @@ static inline unsigned int walt_nr_rtg_high_prio(int cpu)
 	return wrq->walt_stats.nr_rtg_high_prio_tasks;
 }
 
+#if IS_ENABLED(CONFIG_SCHED_MOTO_UNFAIR)
+extern int moto_sched_enabled;
+static inline unsigned int walt_mvp_taks(int cpu)
+{
+	struct walt_rq *wrq = (struct walt_rq *) cpu_rq(cpu)->android_vendor_data1;
+
+	return wrq->num_mvp_tasks;
+}
+#endif
+
 static inline bool task_in_related_thread_group(struct task_struct *p)
 {
 	struct walt_task_struct *wts = (struct walt_task_struct *) p->android_vendor_data1;
@@ -969,9 +979,20 @@ static inline bool walt_flag_test(struct task_struct *p, enum walt_flags feature
 
 /* higher number, better priority */
 #define WALT_RTG_MVP		0
+
+#if IS_ENABLED(CONFIG_SCHED_MOTO_UNFAIR)
+/* Moto huangzq2: reserve mvp prioriteis (11~100) for moto_sched */
+#define UX_PRIO_TOPAPP			70 // must be aligned with moto_sched!
+#define UX_PRIO_KSWAPD			65 // must be aligned with moto_sched!
+
+#define WALT_BINDER_MVP		101
+#define WALT_TASK_BOOST_MVP	UX_PRIO_TOPAPP // align to UX_PRIO_TOPAPP in moto_sched
+#define WALT_LL_PIPE_MVP	103
+#else
 #define WALT_BINDER_MVP		1
 #define WALT_TASK_BOOST_MVP	2
 #define WALT_LL_PIPE_MVP	3
+#endif
 
 #define WALT_NOT_MVP		-1
 
@@ -1146,7 +1167,11 @@ extern struct rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
 
 DECLARE_PER_CPU(u64, rt_task_arrival_time);
 extern int walt_get_mvp_task_prio(struct task_struct *p);
+#if IS_ENABLED(CONFIG_SCHED_MOTO_UNFAIR)
+extern void walt_cfs_deactivate_mvp_task(struct rq *rq, struct task_struct *p, unsigned int reason); // Moto huangzq2: debugging enhancement.
+#else
 extern void walt_cfs_deactivate_mvp_task(struct rq *rq, struct task_struct *p);
+#endif
 
 enum WALT_DEBUG_FEAT {
 	WALT_BUG_UPSTREAM,
